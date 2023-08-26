@@ -54,9 +54,14 @@ I define a minimization problem with `scipy.optimize.minimize` where the cost fu
 1. Two vanishing points
 2. Weights that assign each line (except vertical lines, which are omitted) to one of the two vanishing points.
 
-Consider the following diagram where $p_k$ is a vanishing point $k$ and $c_i$ is the centerpoint of a segment $i$ with endpoints $a_i$ and $b_i$. We want choose vanishing point $p_k$ to minimize $\alpha = r \theta$, or choose a weight $w_i$ to assign segment $i$ to the other vanishing point. 
+Consider the following diagram where $p_k$ is a vanishing point $k$ and $c_i$ is the centerpoint of a segment $i$ with endpoints $a_i$ and $b_i$. We want choose vanishing point $p_k$ to minimize $\alpha_{ki} = r \theta$, or failing that, assign segment $i$ to the other vanishing point such that $\alpha_{ki}$ will not be counted towards the cost.
 
 <img src="https://github.com/ekchapman/pickleball_roomba/assets/43839555/174d3918-5c43-4e7e-b569-42671d2b9aea" width="300" height="140">
 
-More formally:
+More formally, we want to minimize:
 
+$$\sum_{i=1}^N \alpha_{ai}^2 w_i^2 + \sum_{i=1}^N \alpha_{bi}^2 \left( 1 - w_i \right)^2 $$
+
+Given two vanishing points $p_a$ and $p_b$ and $N$ non-vertical line segments.
+
+Local minema can sometimes be a problem, but I had success by choosing sensible initial estimates. I initialized $p_a$ and $p_b$ to be on opposing sides of the image and halfway down along the y-axis. I initialized $w=\vec{0.5}$.
