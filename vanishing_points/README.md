@@ -1,4 +1,4 @@
-# Tangent (A): Vanishing point detection and hirozontal / vertical line classification
+# Tangent (A): Vanishing point detection and line clustering
 See [`vanishing_points/main.py`](https://github.com/ekchapman/pickleball_roomba/blob/main/vanishing_points/main.py) for a script that detects vanishing points in an RGB image and simultaneously assigns detected lines to one or the other vanishing point.
 
 ## Motivation
