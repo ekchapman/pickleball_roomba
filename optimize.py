@@ -29,11 +29,11 @@ def find_vanishing_points(lines: np.ndarray, im_width: int, im_height: int) -> d
     # Initial guesses
     vp_a0 = np.array([-0.25 * im_width, im_height / 2])
     vp_b0 = np.array([1.25 * im_width, im_height / 2])
-    classes0 = np.array([0.5] * len(lines))
+    classes0 = np.array([0.5] * len(non_vertical_lines))
     x0 = np.concatenate((vp_a0, vp_b0, classes0))
 
     vp_bounds = np.array([[-im_width, im_width], [-im_height, im_height]] * 2) * 4
-    class_bounds = np.array([[0, 1]] * len(lines))
+    class_bounds = np.array([[0, 1]] * len(non_vertical_lines))
     bounds = np.concatenate((vp_bounds, class_bounds))
 
     min_out = minimize(

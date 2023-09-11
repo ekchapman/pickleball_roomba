@@ -75,24 +75,29 @@ def main(
     plt.figure()
     plt.imshow(im)
     plt.title("original")
+    plt.tight_layout()
 
     plt.figure()
     plt.imshow(im_blur)
     plt.title("blurred")
+    plt.tight_layout()
 
     plt.figure()
     plt.imshow(im_edges, cmap="Greys")
     plt.title("edges")
+    plt.tight_layout()
 
     _, ax1 = plt.subplots()
     ax1.imshow(im_edges, cmap="Greys")
     plot_segments(ax1, hough_lines, colors=["red"], linewidths=[2])
     plt.title("hough")
+    plt.tight_layout()
 
     _, ax2 = plt.subplots()
     ax2.imshow(im_edges, cmap="Greys")
     plot_segments(ax2, avg_lines, colors=["red"], linewidths=[2])
     plt.title("grouped hough")
+    plt.tight_layout()
 
     _, ax3 = plt.subplots()
     ax3.imshow(im)
@@ -103,6 +108,7 @@ def main(
         x=[vp_a[0], vp_b[0]], y=[vp_a[1], vp_b[1]],
         s=1000, marker='+', color="red"
     )
+    plt.tight_layout()
 
     plt.show()
 
