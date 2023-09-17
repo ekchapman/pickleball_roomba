@@ -141,3 +141,4 @@ def average_segments(lines: np.ndarray) -> np.ndarray:
     p2 = R @ p2_horiz
 
     return np.array([p1[0], p1[1], p2[0], p2[1]])
+    
