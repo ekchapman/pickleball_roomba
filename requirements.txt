@@ -1,0 +1,10 @@
+# I have two nearly-identical systems, so I won't bother with versioning
+# And it may be incomplete-will update as I go.
+numpy
+scipy
+opencv-python
+jupyterlab
+matplotlib
+scikit-learn
+torch
+fire
