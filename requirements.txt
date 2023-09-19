@@ -8,3 +8,4 @@ matplotlib
 scikit-learn
 torch
 fire
+line-segment-intersections
