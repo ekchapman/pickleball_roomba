@@ -1,6 +1,7 @@
 import numpy as np
 
 
+# TODO: THIS DOESNT SEEM TO WORK :((((
 def get_focal_length(p1: np.ndarray, p2: np.ndarray, X1: np.ndarray, X2: np.ndarray, im_width: int, im_height: int) -> float:
     """Given two pixels and their corresponding real-world 3D coordinates, compute the focal length.
 
@@ -39,9 +40,13 @@ def get_focal_length(p1: np.ndarray, p2: np.ndarray, X1: np.ndarray, X2: np.ndar
         (((du - cx) / dx)**2 + ((dv - cy) / dx)**2) / (1 - (1/dx)**2)
     )
     """
-    du, dv = np.abs(p1 - p2)
+    du, dv = p1 - p2
     assert sum(np.isclose(X1 - X2, 0)) == 2
-    dx = np.max(np.abs(X1 - X2)) 
+    dx = X1 - X2
+    dx = max(dx.min(), dx.max(), key=abs)
+
+    du, dv = np.abs(p1 - p2)
+    dx = np.abs(dx)
 
     cx = im_width / 2
     cy = im_height / 2
@@ -56,8 +61,8 @@ if __name__ == "__main__":
     print(get_focal_length(
         p1=np.array((474, 583)),
         p2=np.array((695, 320)),
-        X1=np.array((0, 0, 0)),
-        X2=np.array((4.572, 0, 0)),
+        X1=np.array((20, 0, 0)) * 0.3048,
+        X2=np.array((20, 15, 0)) * 0.3048,
         im_width=912,
         im_height=600)
     )
@@ -65,8 +70,26 @@ if __name__ == "__main__":
     print(get_focal_length(
         p1=np.array((209, 276)),
         p2=np.array((695, 320)),
-        X1=np.array((0, 0, 0)),
-        X2=np.array((6.096, 0, 0)),
+        X1=np.array((0, 15, 0)) * 0.3048,
+        X2=np.array((20, 15, 0)) * 0.3048,
+        im_width=912,
+        im_height=600)
+    )
+
+    print(get_focal_length(
+        p2=np.array((209, 276)),
+        p1=np.array((695, 320)),
+        X2=np.array((0, 15, 0)) * 0.3048,
+        X1=np.array((20, 15, 0)) * 0.3048,
+        im_width=912,
+        im_height=600)
+    )
+
+    print(get_focal_length(
+        p2=np.array((408, 293)),
+        p1=np.array((209, 276)),
+        X2=np.array((10, 15, 0)) * 0.3048,
+        X1=np.array((0, 15, 0)) * 0.3048,
         im_width=912,
         im_height=600)
     )
