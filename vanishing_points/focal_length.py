@@ -39,9 +39,9 @@ def get_focal_length(p1: np.ndarray, p2: np.ndarray, X1: np.ndarray, X2: np.ndar
         (((du - cx) / dx)**2 + ((dv - cy) / dx)**2) / (1 - (1/dx)**2)
     )
     """
-    du, dv = p1 - p2
+    du, dv = np.abs(p1 - p2)
     assert sum(np.isclose(X1 - X2, 0)) == 2
-    dx = np.max(np.abs(X1 - X2))  # sign doesn't matter and abs simplifies logic
+    dx = np.max(np.abs(X1 - X2)) 
 
     cx = im_width / 2
     cy = im_height / 2
