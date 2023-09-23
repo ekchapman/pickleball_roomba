@@ -5,6 +5,11 @@ import numpy as np
 A node "a" through "i" describes a graph as shown below, and an edge
 exists between two nodes if a line can be drawn between them.
 
+Note that a few nodes at the baseline are missing. This is to reduce
+the number of combination of nodes, since permutations of nodes
+will be checked for correspondance against permutations of line
+intersections in an image.
+
     o------o------o
     |      |      |
     |      |      |
@@ -68,16 +73,53 @@ def get_court_corners():
     return np.array(corner_coords)
 
 
+def get_double_court_corners():
+    """Return all possible double-corners, where a double-corner is a sequence of nodes
+    q r s t where q shares an edge with r shares an edge with s shares an edge with t
+    but q shares no edges with s and r shares no edges with t.
+    """
+    double_corner_names = []
+    for q in COURT_GRAPH:
+        for r in COURT_GRAPH[q]:
+            for s in COURT_GRAPH[r]:
+                for t in COURT_GRAPH[s]:
+                    if len([q, r, s, t]) == len(set([q, r, s, t])) and s not in COURT_GRAPH[q] and t not in COURT_GRAPH[r]:
+                        double_corner_names.append([q, r, s, t])
+
+    name2coord = get_court_coordinates()
+
+    corner_coords = []
+    for names in double_corner_names:
+        corner_coords.append([name2coord[name] for name in names])
+
+    return np.array(corner_coords)
+
+
 COURT_CORNERS = get_court_corners()
+DOUBLE_COURT_CORNERS = get_double_court_corners()
 
 
 def get_dense_court_points(pt_per_meter: float):
     """Return an Nx3 list of linearly-distributed points along the court lines."""
+    # everywhere else 
+
     edges = ("ac", "df", "ag", "ci", "be")
+    segments = [[COURT_COORDS[node1], COURT_COORDS[node2]] for node1, node2 in edges]
+
+    # Manually add segments that aren't represented in the partial graph.
+    extra_segments = [
+        [COURT_COORDS["g"], np.array([0, 44, 0]) * 0.3048],
+        [COURT_COORDS["h"], np.array([10, 44, 0]) * 0.3048],
+        [COURT_COORDS["i"], np.array([20, 44, 0]) * 0.3048],
+        [COURT_COORDS["i"], COURT_COORDS["g"]],
+        [np.array([0, 44, 0]) * 0.3048, np.array([20, 44, 0]) * 0.3048],
+        [np.array([-1, 22, 3]) * 0.3048, np.array([21, 22, 3]) * 0.3048],
+    ]
+    # # This actually makes detection worse, so nvm
+    # extra_segments = []
+
     pts = []
-    for node1, node2 in edges:
-        X1 = COURT_COORDS[node1]
-        X2 = COURT_COORDS[node2]
+    for X1, X2 in np.array(segments + extra_segments):
         v = X2 - X1
         v_norm = np.linalg.norm(v)
 
@@ -93,6 +135,7 @@ DENSE_COURT_POINTS = get_dense_court_points(50)
 
 if __name__ == "__main__":
     print(get_court_corners().shape)
+    print(DOUBLE_COURT_CORNERS.shape)
     print(get_court_coordinates())
 
     import matplotlib.pyplot as plt

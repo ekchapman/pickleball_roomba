@@ -1,4 +1,5 @@
 import numpy as np
+import cv2 as cv
 
 
 # TODO: THIS DOESNT SEEM TO WORK :((((
@@ -45,8 +46,8 @@ def get_focal_length(p1: np.ndarray, p2: np.ndarray, X1: np.ndarray, X2: np.ndar
     dx = X1 - X2
     dx = max(dx.min(), dx.max(), key=abs)
 
-    du, dv = np.abs(p1 - p2)
-    dx = np.abs(dx)
+    # du, dv = np.abs(p1 - p2)
+    # dx = np.abs(dx)
 
     cx = im_width / 2
     cy = im_height / 2
@@ -93,3 +94,80 @@ if __name__ == "__main__":
         im_width=912,
         im_height=600)
     )
+
+    print()
+    print()
+
+    # https://stackoverflow.com/questions/73340550/how-does-opencv-projectpoints-perform-transformations-before-projecting
+    def rtvec_to_matrix(rvec, tvec):
+        """Convert rotation vector and translation vector to 4x4 matrix"""
+        rvec = np.asarray(rvec)
+        tvec = np.asarray(tvec)
+
+        T = np.eye(4)
+        R, jac = cv.Rodrigues(rvec)
+        T[:3, :3] = R
+        T[:3, 3] = tvec.squeeze()
+        return T
+
+    f = 727.27738659
+    cx = 455.5
+    cy = 299.5
+    K = np.array([
+        [f, 0, cx],
+        [0, f, cy],
+        [0, 0, 1],
+    ])
+    Kinv = np.array([
+        [1/f, 0, -cx / f],
+        [0, 1/f, -cy / f],
+        [0, 0, 1],
+    ])
+
+    rvec = np.array([[1.74340779, 0.42996179, -0.34798124]]).T
+    tvec = np.array([[-5.32239545, 0.4787943, 5.55458855]]).T
+
+    Rt44 = rtvec_to_matrix(rvec, tvec)
+    Rt = Rt44[:3]
+
+    # R = np.array(
+    #     [
+    #         [8.85187248e-01, 4.65234770e-01, -3.80118672e-04],
+    #         [9.73487830e-02, -1.86021238e-01, -9.77711263e-01],
+    #         [-4.54935985e-01, 8.65420538e-01, -2.09953666e-01]
+    #     ]
+    # )
+
+    # Rt = np.hstack((R, t))
+    
+    p1=np.array((209, 276, 1))
+    p2=np.array((695, 320, 1))
+    X1=np.array((0, 15, 0, 1/0.3048)) * 0.3048
+    X2=np.array((20, 15, 0, 1/0.3048)) * 0.3048
+
+    # Check fwd projection:
+    p1_ = K @ Rt @ X1; p1_ /= p1_[-1]
+    print(p1 - p1_, 'should be small')
+
+    p2_ = K @ Rt @ X2; p2_ /= p2_[-1]
+    print(p2 - p2_, 'should be small')
+
+
+    dp = p1 - p2; dp[-1] = 1
+    dX = X1 - X2; dX[-1] = 1
+
+    # dp_ = K @ Rt @ dX; dp_ /= dp_[-1]
+    dp_ = K @ Rt @ X1 - K @ Rt @ X2; dp_ /= dp_[-1]
+    print(dp_)
+
+    import ipdb; ipdb.set_trace()
+
+    # du, dv = p1 - p2
+    # dx = X1 - X2
+    # dx = max(dx.min(), dx.max(), key=abs)
+
+    # r1 = Kinv @ np.array([du, dv, 1]).T / dx
+
+    # print(r1)
+
+    # print(K @ r1 @ np.array([dx, 0, 0]))
